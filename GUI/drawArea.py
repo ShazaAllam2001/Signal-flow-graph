@@ -10,27 +10,30 @@ class drawArea(QGraphicsScene):
 
     def __init__(self, parent=None):
         super().__init__(parent)
+        self.setBackgroundBrush(QColor("#FFFFFF"))
 
         self.figure = Figure()
         self.axes = self.figure.gca()
         self.graph = nx.DiGraph()
-        self.graph.add_node(1)
+        self.graph.add_edges_from([(1,2),(1,3)])
         nx.draw(self.graph, ax=self.axes)
 
         self.canvas = FigureCanvas(self.figure)
         self.canvas.setMinimumSize(720,610)
         self.addWidget(self.canvas)
 
-        self.setBackgroundBrush(QColor("#FFFFFF"))
-
 
     def mouseDoubleClickEvent(self, event: 'QGraphicsSceneMouseEvent') -> None:
-        print("hello")
+
+        return super().mouseDoubleClickEvent(event)
+
+
+    def mousePressEvent(self, event: 'QGraphicsSceneMouseEvent') -> None:
         pos: QPointF = event.scenePos
 
         #self.clear()
 
-        self.graph.add_node(2)
+        self.graph.add_node(4)
         print(self.graph.nodes())
 
         self.figure = Figure()
@@ -39,12 +42,8 @@ class drawArea(QGraphicsScene):
 
         self.canvas = FigureCanvas(self.figure)
         self.canvas.setMinimumSize(720,610)
+        self.addWidget(self.canvas)
 
-        return super().mouseDoubleClickEvent(event)
-
-
-    def mousePressEvent(self, event: 'QGraphicsSceneMouseEvent') -> None:
-       
         return super().mousePressEvent(event) 
 
 
