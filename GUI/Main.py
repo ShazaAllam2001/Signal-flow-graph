@@ -70,24 +70,60 @@ class Ui_MainWindow(QMainWindow):
 
         # Add node button
         """ for adding a node to the graph """
-        self.add = QPushButton(self.toolBar)
-        self.add.setObjectName(u"add")
-        self.add.setGeometry(QRect(150, 0, 140, 30))
-        self.add.setMouseTracking(True)
-        self.add.setStyleSheet(u"QPushButton#add {\n"
+        self.addNode = QPushButton(self.toolBar)
+        self.addNode.setObjectName(u"addNode")
+        self.addNode.setGeometry(QRect(150, 0, 140, 30))
+        self.addNode.setMouseTracking(True)
+        self.addNode.setStyleSheet(u"QPushButton#addNode {\n"
                                  "border : 3px solid rgb(200, 0, 0);\n"
                                  "background-color: rgb(200, 0, 0);\n"
                                  "color: white;\n"
                                  "}\n"
-                                 "QPushButton#add:hover {\n"
+                                 "QPushButton#addNode:hover {\n"
                                  "border-color : white; \n"
                                  "}")
         font2 = QFont()
         font2.setFamily(u"Serif")
         font2.setPointSize(13)
-        self.add.setFont(font2)
-        self.add.setText(u"Add Node")
-        self.add.clicked.connect(lambda: graph.add_node('fooData'))
+        self.addNode.setFont(font2)
+        self.addNode.setText(u"Add Node")
+        self.addNode.clicked.connect(lambda: self.G.add_node(self.nodeName.text()))
+
+        # Undo button
+        self.undo = QPushButton(self.toolBar)
+        self.undo.setObjectName(u"undo")
+        self.undo.setGeometry(QRect(600, 0, 50, 30))
+        self.undo.setMouseTracking(True)
+        self.undo.setStyleSheet(u"QPushButton#undo {\n"
+                                 "border-radius : 5;\n"
+                                 "border : 2px solid black;\n"
+                                 "}\n"
+                                 "QPushButton#undo:hover {\n"
+                                 "background-color : rgb(225, 225, 225);; \n"
+                                 "}")
+        icon1 = QIcon()
+        icon1.addFile(u"Icons/icons8-undo-48.png", QSize(), QIcon.Normal, QIcon.Off)
+        self.undo.setIcon(icon1)
+        self.undo.setIconSize(QSize(24, 24))
+        self.undo.clicked.connect(lambda: self.G.undo())
+
+        # Redo button
+        self.redo = QPushButton(self.toolBar)
+        self.redo.setObjectName(u"redo")
+        self.redo.setGeometry(QRect(660, 0, 50, 30))
+        self.redo.setMouseTracking(True)
+        self.redo.setStyleSheet(u"QPushButton#redo {\n"
+                                 "border-radius : 5;\n"
+                                 "border : 2px solid black;\n"
+                                 "}\n"
+                                 "QPushButton#redo:hover {\n"
+                                 "background-color : rgb(225, 225, 225);; \n"
+                                 "}")
+        icon2 = QIcon()
+        icon2.addFile(u"Icons/icons8-redo-48.png", QSize(), QIcon.Normal, QIcon.Off)
+        self.redo.setIcon(icon2)
+        self.redo.setIconSize(QSize(24, 24))
+        self.redo.clicked.connect(lambda: self.G.redo())
         
     def output_box(self):
         # Output box
@@ -96,7 +132,7 @@ class Ui_MainWindow(QMainWindow):
         self.output.setGeometry(QRect(760, 20, 420, 610))
         font3 = QFont()
         font3.setFamily(u"Calisto MT")
-        font3.setPointSize(16)
+        font3.setPointSize(17)
         font3.setItalic(True)
         self.output.setFont(font3)
         self.output.setStyleSheet(u"color: rgb(150, 0, 0);")
@@ -175,10 +211,7 @@ class Ui_MainWindow(QMainWindow):
                                  "QPushButton#solve:hover {\n"
                                  "border-color : white; \n"
                                  "}")
-        font5 = QFont()
-        font5.setFamily(u"Calisto MT")
-        font5.setPointSize(17)
-        self.solve.setFont(font5)
+        self.solve.setFont(font3)
         self.solve.setText(u"Solve")
         self.solve.clicked.connect(self.solve_clicked)
 
