@@ -1,6 +1,5 @@
 import itertools
 import networkx as nx
-import sympy as sym
 
 
 def remove_duplicates(paths):
@@ -11,16 +10,28 @@ def remove_duplicates(paths):
     return res
 
 
-def gain_multiply(gains):
+def merge_gains(gains):
     return list(itertools.product(*gains))
 
 
 def get_all_fwdpath_gains(fwd_paths_gain):
     total_gains = []
     for i in fwd_paths_gain:
-        x_gain = 1
+        k = 0
+        flag = True
+        x_gain = ""
         for j in i:
-            x_gain *= j
+            if isinstance(j, int):
+                if j == 1:
+                    j = ""
+                    flag = False
+                else:
+                    j = str(j)
+            x_gain += j
+            k += 1
+            if k <= len(i)-1 and flag:
+                x_gain += '*'
+            flag = True
         total_gains.append(x_gain)
     return total_gains
 
@@ -35,5 +46,5 @@ def get_gains(graph, path):
         for j in range(len(edge)):
             weights.append(edge[j]['weight'])
         gains.append(weights)
-    gains = gain_multiply(gains)
+    gains = merge_gains(gains)
     return get_all_fwdpath_gains(gains)
