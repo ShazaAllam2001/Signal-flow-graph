@@ -5,11 +5,11 @@ import sys
 
 from drawArea import drawArea
 from outputArea import outputArea
-from AppLogic.drawGraph import graph
+from AppLogic.drawGraph import Graph
 
 
 class Ui_MainWindow(QMainWindow):
-    G = graph()
+    G: Graph
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -31,8 +31,8 @@ class Ui_MainWindow(QMainWindow):
 
     def Ui_Components(self):
         """ window components """
-
         self.tool_bar()
+        self.output_box()
 
         # Drawing Area
         self.drawArea = QGraphicsView(self)
@@ -41,8 +41,9 @@ class Ui_MainWindow(QMainWindow):
         self.drawScene = drawArea(self.drawArea)
         self.drawArea.setScene(self.drawScene)
         self.drawArea.setSceneRect(0, 0, 720, 610)
-        
-        self.output_box()
+
+        self.G = Graph(self.drawScene)
+    
 
     def tool_bar(self):
         # toolBar
@@ -53,54 +54,36 @@ class Ui_MainWindow(QMainWindow):
 
         # Node name line edit
         """ for writing the name of the node to be added """
-        self.nodeName = QLineEdit(self.toolBar)
-        self.nodeName.setObjectName(u"nodeName")
-        self.nodeName.setGeometry(QRect(0, 0, 140, 30))
-        font1 = QFont()
-        font1.setPointSize(11)
-        self.nodeName.setFont(font1)
-        self.nodeName.setStyleSheet(u"QLineEdit#nodeName {\n"
-                                     "border : 1px solid black;\n"
-                                     "background-color: white;\n"
-                                     "color: rgb(63,63,63);\n"
-                                     "}\n"
-                                     "QLineEdit#nodeName:focus {\n"
-                                     "border-color : blue; \n"
-                                     "}")
+        self.nodeName = self.line_edit(QRect(0, 0, 100, 30))
 
         # Add node button
-        """ for adding a node to the graph """
-        self.addNode = QPushButton(self.toolBar)
-        self.addNode.setObjectName(u"addNode")
-        self.addNode.setGeometry(QRect(150, 0, 140, 30))
-        self.addNode.setMouseTracking(True)
-        self.addNode.setStyleSheet(u"QPushButton#addNode {\n"
-                                 "border : 3px solid rgb(200, 0, 0);\n"
-                                 "background-color: rgb(200, 0, 0);\n"
-                                 "color: white;\n"
-                                 "}\n"
-                                 "QPushButton#addNode:hover {\n"
-                                 "border-color : white; \n"
-                                 "}")
-        font2 = QFont()
-        font2.setFamily(u"Serif")
-        font2.setPointSize(13)
-        self.addNode.setFont(font2)
+        self.addNode = self.add_button(QRect(105, 0, 90, 30))
         self.addNode.setText(u"Add Node")
         self.addNode.clicked.connect(lambda: self.G.add_node(self.nodeName.text()))
 
+        # form node name line edit
+        """ for writing the name of the node to be the start of the edge """
+        self.fromName = self.line_edit(QRect(205, 0, 100, 30))
+        self.fromName.setPlaceholderText(u"From")
+
+        # to node name line edit
+        """ for writing the name of the node to be the end of the edge """
+        self.toName = self.line_edit(QRect(310, 0, 100, 30))
+        self.toName.setPlaceholderText(u"To")
+
+        # edge weight line edit
+        """ for writing the weight of the edge """
+        self.weight = self.line_edit(QRect(415, 0, 100, 30))
+        self.weight.setPlaceholderText(u"Weight")
+
+        # Add edge button
+        self.addEdge = self.add_button(QRect(520, 0, 90, 30))
+        self.addEdge.setText(u"Add Edge")
+        self.addEdge.clicked.connect(lambda: self.G.add_edge(self.fromName.text(), self.toName.text(), float(self.weight.text())))
+        
         # Undo button
-        self.undo = QPushButton(self.toolBar)
-        self.undo.setObjectName(u"undo")
-        self.undo.setGeometry(QRect(600, 0, 50, 30))
-        self.undo.setMouseTracking(True)
-        self.undo.setStyleSheet(u"QPushButton#undo {\n"
-                                 "border-radius : 5;\n"
-                                 "border : 2px solid black;\n"
-                                 "}\n"
-                                 "QPushButton#undo:hover {\n"
-                                 "background-color : rgb(225, 225, 225);; \n"
-                                 "}")
+        self.undo = self.undo_redo(QRect(620, 0, 45, 30))
+        self.undo.setToolTip(u"Undo")
         icon1 = QIcon()
         icon1.addFile(u"Icons/icons8-undo-48.png", QSize(), QIcon.Normal, QIcon.Off)
         self.undo.setIcon(icon1)
@@ -108,23 +91,65 @@ class Ui_MainWindow(QMainWindow):
         self.undo.clicked.connect(lambda: self.G.undo())
 
         # Redo button
-        self.redo = QPushButton(self.toolBar)
-        self.redo.setObjectName(u"redo")
-        self.redo.setGeometry(QRect(660, 0, 50, 30))
-        self.redo.setMouseTracking(True)
-        self.redo.setStyleSheet(u"QPushButton#redo {\n"
-                                 "border-radius : 5;\n"
-                                 "border : 2px solid black;\n"
-                                 "}\n"
-                                 "QPushButton#redo:hover {\n"
-                                 "background-color : rgb(225, 225, 225);; \n"
-                                 "}")
+        self.redo = self.undo_redo(QRect(675, 0, 45, 30))
+        self.redo.setToolTip(u"Redo")
         icon2 = QIcon()
         icon2.addFile(u"Icons/icons8-redo-48.png", QSize(), QIcon.Normal, QIcon.Off)
         self.redo.setIcon(icon2)
         self.redo.setIconSize(QSize(24, 24))
         self.redo.clicked.connect(lambda: self.G.redo())
         
+    def line_edit(self, geometry: QRect):
+        lineEdit = QLineEdit(self.toolBar)
+        lineEdit.setObjectName(u"nodeName")
+        lineEdit.setGeometry(geometry)
+        font1 = QFont()
+        font1.setPointSize(11)
+        lineEdit.setFont(font1)
+        lineEdit.setStyleSheet(u"QLineEdit#nodeName {\n"
+                                     "border : 1px solid black;\n"
+                                     "background-color: white;\n"
+                                     "color: rgb(63,63,63);\n"
+                                     "padding-left: 5px;\n"
+                                     "}\n"
+                                     "QLineEdit#nodeName:focus {\n"
+                                     "border-color : blue; \n"
+                                     "}")
+        return lineEdit
+
+    def add_button(self, geometry: QRect):
+        addButton = QPushButton(self.toolBar)
+        addButton.setObjectName(u"add")
+        addButton.setGeometry(geometry)
+        addButton.setMouseTracking(True)
+        addButton.setStyleSheet(u"QPushButton#add {\n"
+                                 "border : 3px solid rgb(200, 0, 0);\n"
+                                 "background-color: rgb(200, 0, 0);\n"
+                                 "color: white;\n"
+                                 "}\n"
+                                 "QPushButton#add:hover {\n"
+                                 "border-color : white; \n"
+                                 "}")
+        font2 = QFont()
+        font2.setFamily(u"Serif")
+        font2.setPointSize(11)
+        addButton.setFont(font2)
+        return addButton
+
+    def undo_redo(self, geometry: QRect):
+        undoRedo = QPushButton(self.toolBar)
+        undoRedo.setObjectName(u"undoRedo")
+        undoRedo.setGeometry(geometry)
+        undoRedo.setMouseTracking(True)
+        undoRedo.setStyleSheet(u"QPushButton#undoRedo {\n"
+                                 "border-radius : 5;\n"
+                                 "border : 2px solid black;\n"
+                                 "}\n"
+                                 "QPushButton#undoRedo:hover {\n"
+                                 "background-color : rgb(225, 225, 225);; \n"
+                                 "}")
+        return undoRedo
+
     def output_box(self):
         # Output box
         self.output = QGroupBox(self)
@@ -139,14 +164,7 @@ class Ui_MainWindow(QMainWindow):
         self.output.setTitle(u"Output")
 
         # Forward paths label
-        self.forwardPathLabel = QLabel(self.output)
-        self.forwardPathLabel.setObjectName(u"forwardPathLabel")
-        self.forwardPathLabel.setGeometry(QRect(15, 30, 200, 20))
-        font4 = QFont()
-        font4.setFamily(u"Lucida Sans Unicode")
-        font4.setPointSize(11)
-        self.forwardPathLabel.setFont(font4)
-        self.forwardPathLabel.setStyleSheet(u"color: black;")
+        self.forwardPathLabel = self.label(QRect(15, 30, 200, 20))
         self.forwardPathLabel.setText(u"Forward paths = ")
 
         # Forward path
@@ -156,11 +174,7 @@ class Ui_MainWindow(QMainWindow):
         self.forwardPath.setGeometry(QRect(15, 55, 390, 100))
 
         # Loops label
-        self.loopsLabel = QLabel(self.output)
-        self.loopsLabel.setObjectName(u"loopsLabel")
-        self.loopsLabel.setGeometry(QRect(15, 160, 200, 20))
-        self.loopsLabel.setFont(font4)
-        self.loopsLabel.setStyleSheet(u"color: black;")
+        self.loopsLabel = self.label(QRect(15, 160, 200, 20))
         self.loopsLabel.setText(u"Loops = ")
 
         # Loops
@@ -170,11 +184,7 @@ class Ui_MainWindow(QMainWindow):
         self.loops.setGeometry(QRect(15, 185, 390, 100))
 
         # Non-touchings Loops label
-        self.nonTouchingLabel = QLabel(self.output)
-        self.nonTouchingLabel.setObjectName(u"nonTouchingLabel")
-        self.nonTouchingLabel.setGeometry(QRect(15, 290, 200, 20))
-        self.nonTouchingLabel.setFont(font4)
-        self.nonTouchingLabel.setStyleSheet(u"color: black;")
+        self.nonTouchingLabel = self.label(QRect(15, 290, 200, 20))
         self.nonTouchingLabel.setText(u"Non-touching Loops = ")
 
         # Non-touching Loops
@@ -184,11 +194,7 @@ class Ui_MainWindow(QMainWindow):
         self.nonTouching.setGeometry(QRect(15, 315, 390, 100))
 
         # Transfer function label
-        self.transferLabel = QLabel(self.output)
-        self.transferLabel.setObjectName(u"transferLabel")
-        self.transferLabel.setGeometry(QRect(15, 420, 200, 20))
-        self.transferLabel.setFont(font4)
-        self.transferLabel.setStyleSheet(u"color: black;")
+        self.transferLabel = self.label(QRect(15, 420, 200, 20))
         self.transferLabel.setText(u"Transfer function = ")
 
         # Transfer function
@@ -215,6 +221,16 @@ class Ui_MainWindow(QMainWindow):
         self.solve.setText(u"Solve")
         self.solve.clicked.connect(self.solve_clicked)
 
+    def label(self, geometry: QRect):
+        label = QLabel(self.output)
+        label.setObjectName(u"label")
+        label.setGeometry(geometry)
+        font4 = QFont()
+        font4.setFamily(u"Lucida Sans Unicode")
+        font4.setPointSize(11)
+        label.setFont(font4)
+        label.setStyleSheet(u"color: black;")
+        return label
 
     def solve_clicked(self):
         pass
