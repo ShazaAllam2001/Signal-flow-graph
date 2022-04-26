@@ -10,7 +10,7 @@ class ErrorMessage(QMessageBox):
         """ intializting window attributes """
         self.setWindowTitle(u"Error")
         self.setText(message)
-        self.resize(280, 170)
+        self.resize(280, 180)
         self.setIcon(QMessageBox.Critical)
 
     def show(self):
