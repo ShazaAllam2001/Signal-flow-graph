@@ -1,6 +1,7 @@
 from PyQt5.QtWidgets import *
 
 import networkx as nx
+import itertools
 
 from AppLogic.SolveGraph.forwardPaths import generate_all_fwdpaths, get_fwdPaths_gains
 from AppLogic.SolveGraph.loops import generate_all_loops, get_loops_gains
@@ -45,8 +46,41 @@ class SolveGraph():
 
         return cycle_paths, gains
 
-    def solveNontouchingLoops(self):
-        pass
+    def solveNontouchingLoops(self, loop_paths):
+        r = 2 # number of non touching loops
+        nonTouching_exits = False
+        nonTouching_paths = []
+        while True:
+            paths = []
+            combinations = itertools.combinations(loop_paths, r)
+            for combination in combinations:
+                areNonTouching = True
+                for index in range(r-1):
+                    G1 = nx.path_graph(combination[index], create_using=nx.DiGraph)
+                    G2 = nx.path_graph(combination[(index+1) % (r+1)], create_using=nx.DiGraph)
+                    G: nx.DiGraph = nx.intersection(G1, G2)
+                    if len(G.nodes) != 0:
+                        areNonTouching = False
+                        break
+                if areNonTouching:
+                    nonTouching_exits = True
+                    paths.append(combination) 
+            if nonTouching_exits:
+                r += 1
+                nonTouching_exits = False
+                nonTouching_paths.append(paths)
+            else:
+                break
+
+            outputs = self.output.children() 
+            nonTouching_text = "" 
+            for index in range(len(nonTouching_paths)):
+                nonTouching_text += str(index+2) + "non-touching loops:\n"
+                for path in nonTouching_paths[index]:
+                    nonTouching_text += str(path) + ","
+                nonTouching_text += "\n"           
+            outputs[5].setText(nonTouching_text)
+        return nonTouching_paths
 
     def solveTransferFunctions(self):
         pass
@@ -57,7 +91,7 @@ class SolveGraph():
             self.target = target
             fwd_paths, fwd_gains = self.solveForwardPaths()
             loop_paths, loop_gains = self.solveLoops()
-            self.solveNontouchingLoops()
+            self.solveNontouchingLoops(loop_paths)
             self.solveTransferFunctions()
         else:
             message = ErrorMessage("Source or/and target does not exist in graph!")
