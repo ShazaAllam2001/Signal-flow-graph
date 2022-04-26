@@ -24,7 +24,7 @@ class outputArea(QScrollArea):
         # setting font to the text
         font = QFont()
         font.setFamily(u"Segoe UI")
-        font.setPointSize(11)
+        font.setPointSize(12)
         self.label.setFont(font)
         
         # styling background color

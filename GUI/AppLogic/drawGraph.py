@@ -3,7 +3,6 @@ from PyQt5.QtWidgets import *
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 import networkx as nx
-from numpy import number
 from copy import deepcopy 
 
 class Graph():
@@ -31,7 +30,7 @@ class Graph():
         self.graph.add_node(node)
         self.refresh_figure()
 
-    def add_edge(self, fromNode: str, toNode: str, weight: number):
+    def add_edge(self, fromNode: str, toNode: str, weight: str):
         self.undoList.append(deepcopy(self.graph))
         self.graph.add_edge(fromNode, toNode, weight=weight)
         self.refresh_figure()

@@ -6,10 +6,12 @@ import sys
 from drawArea import drawArea
 from outputArea import outputArea
 from AppLogic.drawGraph import Graph
+from solveWindow import SolveWindow
 
 
 class Ui_MainWindow(QMainWindow):
     G: Graph
+    solveWindow: SolveWindow
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -43,6 +45,7 @@ class Ui_MainWindow(QMainWindow):
         self.drawArea.setSceneRect(0, 0, 720, 610)
 
         self.G = Graph(self.drawScene)
+        self.solveWindow = SolveWindow(self.output)
     
 
     def tool_bar(self):
@@ -79,7 +82,7 @@ class Ui_MainWindow(QMainWindow):
         # Add edge button
         self.addEdge = self.add_button(QRect(520, 0, 90, 30))
         self.addEdge.setText(u"Add Edge")
-        self.addEdge.clicked.connect(lambda: self.G.add_edge(self.fromName.text(), self.toName.text(), float(self.weight.text())))
+        self.addEdge.clicked.connect(lambda: self.G.add_edge(self.fromName.text(), self.toName.text(), self.weight.text()))
         
         # Undo button
         self.undo = self.undo_redo(QRect(620, 0, 45, 30))
@@ -146,7 +149,7 @@ class Ui_MainWindow(QMainWindow):
                                  "border : 2px solid black;\n"
                                  "}\n"
                                  "QPushButton#undoRedo:hover {\n"
-                                 "background-color : rgb(225, 225, 225);; \n"
+                                 "background-color : rgb(225, 225, 225);\n"
                                  "}")
         return undoRedo
 
@@ -172,6 +175,7 @@ class Ui_MainWindow(QMainWindow):
         self.forwardPath = outputArea(self.output)
         self.forwardPath.setObjectName(u"forwardPath")
         self.forwardPath.setGeometry(QRect(15, 55, 390, 100))
+        self.forwardPath.setStyleSheet(u"color: rgb(88, 92, 122);")
 
         # Loops label
         self.loopsLabel = self.label(QRect(15, 160, 200, 20))
@@ -182,6 +186,7 @@ class Ui_MainWindow(QMainWindow):
         self.loops = outputArea(self.output)
         self.loops.setObjectName(u"loops")
         self.loops.setGeometry(QRect(15, 185, 390, 100))
+        self.loops.setStyleSheet(u"color: rgb(88, 92, 122);")
 
         # Non-touchings Loops label
         self.nonTouchingLabel = self.label(QRect(15, 290, 200, 20))
@@ -192,6 +197,7 @@ class Ui_MainWindow(QMainWindow):
         self.nonTouching = outputArea(self.output)
         self.nonTouching.setObjectName(u"nonTouching")
         self.nonTouching.setGeometry(QRect(15, 315, 390, 100))
+        self.nonTouching.setStyleSheet(u"color: rgb(88, 92, 122);")
 
         # Transfer function label
         self.transferLabel = self.label(QRect(15, 420, 200, 20))
@@ -202,6 +208,7 @@ class Ui_MainWindow(QMainWindow):
         self.transfer = outputArea(self.output)
         self.transfer.setObjectName(u"transfer")
         self.transfer.setGeometry(QRect(15, 445, 390, 100))
+        self.transfer.setStyleSheet(u"color: rgb(88, 92, 122);")
 
         # Solve button
         """ for sloving the graph """
@@ -219,7 +226,7 @@ class Ui_MainWindow(QMainWindow):
                                  "}")
         self.solve.setFont(font3)
         self.solve.setText(u"Solve")
-        self.solve.clicked.connect(self.solve_clicked)
+        self.solve.clicked.connect(lambda: self.solveWindow.show(self.G.graph))
 
     def label(self, geometry: QRect):
         label = QLabel(self.output)
@@ -232,15 +239,11 @@ class Ui_MainWindow(QMainWindow):
         label.setStyleSheet(u"color: black;")
         return label
 
-    def solve_clicked(self):
-        pass
-
 
 
 if __name__ == "__main__":
     App = QApplication(sys.argv)
-    window1 = Ui_MainWindow()
-    window1.show()
+    window = Ui_MainWindow()
+    window.show()
     sys.exit(App.exec_())
-      
-     
+          
