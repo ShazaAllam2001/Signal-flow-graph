@@ -6,6 +6,7 @@ from AppLogic.SolveGraph.forwardPaths import generate_all_fwdpaths, get_fwdPaths
 from AppLogic.SolveGraph.loops import generate_all_loops, get_loops_gains
 from AppLogic.SolveGraph.nontouchingLoops import *
 from AppLogic.SolveGraph.transferFunctions import *
+from AppLogic.errorMessage import ErrorMessage
 
 class SolveGraph():
     graph: nx.DiGraph
@@ -51,9 +52,13 @@ class SolveGraph():
         pass
 
     def solve(self, source, target):
-        self.source = source
-        self.target = target
-        self.solveForwardPaths()
-        self.solveLoops()
-        self.solveNontouchingLoops()
-        self.solveTransferFunctions()
+        if self.graph.has_node(source) and self.graph.has_node(target):
+            self.source = source
+            self.target = target
+            fwd_paths, fwd_gains = self.solveForwardPaths()
+            loop_paths, loop_gains = self.solveLoops()
+            self.solveNontouchingLoops()
+            self.solveTransferFunctions()
+        else:
+            message = ErrorMessage("Source or/and target does not exist in graph!")
+            message.show()

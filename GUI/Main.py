@@ -44,7 +44,7 @@ class Ui_MainWindow(QMainWindow):
         self.drawArea.setScene(self.drawScene)
         self.drawArea.setSceneRect(0, 0, 720, 610)
 
-        self.G = Graph(self.drawScene)
+        self.G = Graph(self.drawScene, self.toolBar)
         self.solveWindow = SolveWindow(self.output)
     
 
