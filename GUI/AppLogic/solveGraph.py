@@ -21,7 +21,6 @@ class SolveGraph():
     def solveForwardPaths(self):
         fwd_paths = list(generate_all_fwdpaths(self.graph, self.source, self.target))
         gains = []
-        fwd_paths_nodes = []
         for path in fwd_paths:
             gains.append(get_fwdPath_gain(self.graph, path))
 
@@ -30,7 +29,7 @@ class SolveGraph():
             fwd_text +=  "Path: " + str(fwd_paths[index]) + ", Gain: " + str(gains[index]) + "\n"
         self.outputs[1].setText(fwd_text)
 
-        return fwd_paths_nodes, gains
+        return fwd_paths, gains
 
     def solveLoops(self):
         cycle_paths = list(generate_all_loops(self.graph))
@@ -67,7 +66,7 @@ class SolveGraph():
 
         deltas_text = "" 
         for index in range(len(fwd_paths)):
-            deltas_text += "delta" + str(index+1) + " = " + str(deltas[index]) + "\n" 
+            deltas_text += "delta " + str(index+1) + " = " + str(deltas[index]) + "\n" 
         deltas_text += "delta = " + str(delta)  
         self.outputs[7].setText(deltas_text)
 
@@ -92,6 +91,7 @@ class SolveGraph():
             loop_paths, loop_gains = self.solveLoops()
             nonTouching_paths = self.solveNontouchingLoops(loop_paths)
             deltas, delta = self.solveDeltas(fwd_paths, loop_paths, nonTouching_paths)
+            print(deltas, delta)
             self.solveTransferFunctions(deltas, delta, fwd_paths)
         else:
             message = ErrorMessage("Source or/and target does not exist in graph!")

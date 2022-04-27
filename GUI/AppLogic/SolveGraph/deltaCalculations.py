@@ -7,7 +7,7 @@ def get_non_touching_loops_with_a_path(path, loops):
     for loop in loops:
         intersection = [node for node in path if node in loop]
         if not intersection:
-            non_touching_loops += loop
+            non_touching_loops.append(loop)
     return non_touching_loops
 
 
