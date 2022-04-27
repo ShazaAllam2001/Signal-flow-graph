@@ -24,24 +24,19 @@ def calculate_delta_i(graph: nx.DiGraph, path, loops, non_touching_loops):
         return delta_i
 
     sign = 1
-    total = 0
-    r = 2
     for non_touching_group in non_touching_loops:
-        if len(non_touching_group) > r:
-            r += 1
-            delta_i += sign * total
-            sign *= -1
-            total = 0
-
-        prod = 1
-        for loop in non_touching_group:
-            if loop in loops_not_touching_path:
-                prod *= get_loop_gain(graph, loop)
-            else:
-                prod = 0
-                break
-        total += prod
-
+        total = 0
+        for loops in non_touching_group:
+            prod = 1
+            for loop in loops:
+                if loop in loops_not_touching_path:
+                    prod *= get_loop_gain(graph, loop)
+                else:
+                    prod = 0
+                    break
+            total += prod
+        delta_i += sign * total
+        sign *= -1
     return delta_i
 
 
@@ -52,18 +47,14 @@ def calculate_delta(graph: nx.DiGraph, loops, non_touching_loops):
         total += get_loop_gain(graph, loop)
     delta -= total
 
-    r = 2
     sign = 1
-    total = 0
     for non_touching_group in non_touching_loops:
-        if len(non_touching_group) > r:
-            r += 1
-            delta += sign * total
-            total = 0
-            sign *= -1
-        prod = 1
-        for tupleLoops in non_touching_group:
-            for loop in tupleLoops:
+        total = 0
+        for loops in non_touching_group:
+            prod = 1
+            for loop in loops:
                 prod *= get_loop_gain(graph, loop)
-        total += prod
+            total += prod
+        delta += sign * total
+        sign *= -1
     return delta
