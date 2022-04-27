@@ -62,7 +62,8 @@ def calculate_delta(graph: nx.DiGraph, loops, non_touching_loops):
             total = 0
             sign *= -1
         prod = 1
-        for loop in non_touching_group:
-            prod *= get_loop_gain(graph, loop)
+        for tupleLoops in non_touching_group:
+            for loop in tupleLoops:
+                prod *= get_loop_gain(graph, loop)
         total += prod
     return delta
