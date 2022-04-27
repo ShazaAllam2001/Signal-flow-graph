@@ -19,7 +19,7 @@ class Graph():
     def refresh_figure(self):
         self.figure = Figure()
         self.axes = self.figure.gca()
-        pos = nx.random_layout(self.graph)
+        pos = nx.planar_layout(self.graph)
         nx.draw(self.graph, pos, self.axes, with_labels=True)
         labels = nx.get_edge_attributes(self.graph,'weight')
         nx.draw_networkx_edge_labels(self.graph, pos, ax=self.axes, edge_labels=labels, clip_on=False)

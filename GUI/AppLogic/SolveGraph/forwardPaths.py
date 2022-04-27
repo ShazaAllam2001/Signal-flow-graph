@@ -5,27 +5,14 @@ def generate_all_fwdpaths(graph: nx.DiGraph, source, target):
 
 def get_total_gain(path_gains):
     k = 0
-    isString = True
-    path_gain_number = 1
-    path_gain_str = ""
+    path_gain = 1
     for gain in path_gains:
-        gain = str(gain)
-        if gain.isnumeric():
-            isString = False
-            path_gain_number *= float(gain)
-        else:
-            path_gain_str += gain
+        path_gain *= float(gain)
         k += 1
-        if k <= len(path_gains)-1 and isString:
-            path_gain_str += '*'
-        isString = True
+     
+    return path_gain
 
-    if path_gain_str == "":
-        return path_gain_number
-    else:
-        return path_gain_str
-
-def get_fwdPaths_gains(graph: nx.DiGraph, path):
+def get_fwdPath_gain(graph: nx.DiGraph, path):
     gains = []
     length = len(path) - 1
     mod = length + 1

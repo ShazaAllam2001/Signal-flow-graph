@@ -14,7 +14,6 @@ class SolveWindow(QWidget):
         self.solve = SolveGraph(output)
 
         """ intializting window attributes """
-
         self.setWindowTitle(u"Give Input & Output")
         self.resize(280, 170)
 
@@ -91,4 +90,6 @@ class SolveWindow(QWidget):
     def hide(self):
         self.solve.solve(self.source.text(), self.target.text())
         super().hide()
+        self.source.setText("")
+        self.target.setText("")
         

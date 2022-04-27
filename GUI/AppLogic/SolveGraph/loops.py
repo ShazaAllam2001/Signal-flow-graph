@@ -5,7 +5,7 @@ from AppLogic.SolveGraph.forwardPaths import get_total_gain
 def generate_all_loops(graph: nx.DiGraph):
     return nx.simple_cycles(graph)
 
-def get_loops_gains(graph: nx.DiGraph, cycle):
+def get_loop_gain(graph: nx.DiGraph, cycle):
     gains = []
     length = len(cycle) 
     for i in range(length):

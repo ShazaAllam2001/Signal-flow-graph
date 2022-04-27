@@ -1,6 +1,6 @@
-from loops import get_loops_gains
 import networkx as nx
 
+from AppLogic.SolveGraph.loops import get_loop_gain
 
 def get_non_touching_loops_with_a_path(path, loops):
     non_touching_loops = []
@@ -18,7 +18,7 @@ def calculate_delta_i(graph: nx.DiGraph, path, loops, non_touching_loops):
     if loops_not_touching_path:
         total = 0
         for loop in loops_not_touching_path:
-            total += get_loops_gains(graph, loop)
+            total += get_loop_gain(graph, loop)
         delta_i -= total
     else:
         return delta_i
@@ -36,7 +36,7 @@ def calculate_delta_i(graph: nx.DiGraph, path, loops, non_touching_loops):
         prod = 1
         for loop in non_touching_group:
             if loop in loops_not_touching_path:
-                prod *= get_loops_gains(graph, loop)
+                prod *= get_loop_gain(graph, loop)
             else:
                 prod = 0
                 break
@@ -49,7 +49,7 @@ def calculate_delta(graph: nx.DiGraph, loops, non_touching_loops):
     delta = 1
     total = 0
     for loop in loops:
-        total += get_loops_gains(graph, loop)
+        total += get_loop_gain(graph, loop)
     delta -= total
 
     r = 2
@@ -63,6 +63,6 @@ def calculate_delta(graph: nx.DiGraph, loops, non_touching_loops):
             sign *= -1
         prod = 1
         for loop in non_touching_group:
-            prod *= get_loops_gains(graph, loop)
+            prod *= get_loop_gain(graph, loop)
         total += prod
     return delta

@@ -1,14 +1,12 @@
 import networkx as nx
-from forwardPaths import get_fwdPaths_gains
-from deltaCalculations import calculate_delta_i
-from deltaCalculations import calculate_delta
+
+from AppLogic.SolveGraph.forwardPaths import get_fwdPath_gain
 
 
-def calculate_transfer_function(graph: nx.DiGraph, paths, loops, non_touching_loops):
+def calculate_transfer_function(graph: nx.DiGraph, deltas, delta, fwd_paths):
     summation = 0
-    for path in paths:
-        p_i = get_fwdPaths_gains(graph, path)
-        delta_i = calculate_delta_i(graph, path, loops, non_touching_loops)
-        summation += p_i * delta_i
-    delta = calculate_delta(graph, loops, non_touching_loops)
+    for index in range(len(fwd_paths)):
+        p_i = get_fwdPath_gain(graph, fwd_paths[index])
+        summation += p_i * deltas[index]
+    
     return summation / delta
